@@ -1,0 +1,47 @@
+<?php
+
+class DamageListModel extends CI_Model {
+    
+
+    public $damagerIDNum;
+    public $labID;
+    public $compSerialNum;
+    public $eqpSerialNum;
+    public $teacher;
+    
+	function __construct(){
+        parent::__construct();
+    }
+
+
+    public function addDamageEquipments(){
+        $return = array();
+        foreach ($_POST['equipment'] as $equipment) {
+           $this->damagerIDNum = $_POST['damagerID']; 
+           $this->eqpSerialNum = $equipment;
+           $this->teacher = $_POST['damagerTeacher'];
+           $return[] = $this->db->insert('damaged_list',$this);
+        }
+        return $return;
+    }
+
+    public function getDamageEquipmentList(){
+
+      $this->db->select("compSerialNum,eqpSerialNum,dateReported");
+      $this->db->from('damaged_list');
+      $result = $this->db->get()->result_array();
+
+      return $result;
+
+      // $list = $this->db->get('damaged_list');
+      // return $list->result();
+    }
+
+    public function repairEquipments(){
+        foreach ($_POST['equipment'] as $equipment) {
+            $this->db->set('isRepaired', 1);
+            $this->db->where('eqpSerialNum', $equipment);
+            return $this->db->update('damaged_list');    
+        }
+    }
+}
